@@ -1,0 +1,16 @@
+- name: Read existing catchall
+  command: uberspace mail catchall status
+  register: uberspace_mail_catchall_result
+  failed_when: uberspace_mail_catchall_result.rc != 0
+  changed_when: false
+
+- name: Set Catchall
+  when: 
+    - state == "present"
+    - user not in uberspace_mail_catchall_result.stdout_lines
+  command: "uberspace mail catchall set {{ user }}"
+
+- name: Delete Catchall
+  when: 
+    - state == "absent"
+  command: "uberspace mail catchall del"
